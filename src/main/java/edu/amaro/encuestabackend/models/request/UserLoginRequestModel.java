@@ -8,12 +8,12 @@ import lombok.Data;
 @Data
 public class UserLoginRequestModel {
 
-    @NotEmpty
-    @Email
+    //@NotEmpty
+    //@Email
     private String email;
 
-    @NotEmpty
-    @Size(min = 8, max = 40)
+    //@NotEmpty
+    //@Size(min = 8, max = 40)
     private String password;
     
 }
