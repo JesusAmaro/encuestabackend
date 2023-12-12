@@ -1,5 +1,7 @@
 package edu.amaro.encuestabackend.controllers;
 
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -12,11 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.amaro.encuestabackend.entities.PollEntity;
+import edu.amaro.encuestabackend.interfaces.PollResult;
 import edu.amaro.encuestabackend.models.request.PollCreationRequestModel;
 import edu.amaro.encuestabackend.models.responses.CreatedPollRest;
 import edu.amaro.encuestabackend.models.responses.PaginatedPollRest;
 import edu.amaro.encuestabackend.models.responses.PollRest;
+import edu.amaro.encuestabackend.models.responses.PollResultRest;
+import edu.amaro.encuestabackend.models.responses.PollResultWrapperRest;
 import edu.amaro.encuestabackend.services.PollService;
+import edu.amaro.encuestabackend.utils.transformer.PollResultTransformer;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -83,6 +89,17 @@ public class PollController {
     @DeleteMapping(path = "/{id}")
     public void deletePoll(@PathVariable String id, Authentication authentication) {
         pollService.deletePoll(id, authentication.getPrincipal().toString());
+    }
+    
+    @GetMapping(value = "/{id}/results")
+    public PollResultWrapperRest getResults(@PathVariable String id, Authentication authentication) {
+        List<PollResult> results = pollService.getResults(id, authentication.getPrincipal().toString());
+
+        PollEntity poll = pollService.getPoll(id);
+
+        PollResultTransformer transformer = new PollResultTransformer();
+
+        return new PollResultWrapperRest(transformer.transformData(results), poll.getContent(), poll.getId());
     }
     
     

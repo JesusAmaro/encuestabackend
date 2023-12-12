@@ -1,5 +1,6 @@
 package edu.amaro.encuestabackend.services.implementation;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
@@ -12,6 +13,7 @@ import edu.amaro.encuestabackend.entities.AnswerEntity;
 import edu.amaro.encuestabackend.entities.PollEntity;
 import edu.amaro.encuestabackend.entities.QuestionEntity;
 import edu.amaro.encuestabackend.entities.UserEntity;
+import edu.amaro.encuestabackend.interfaces.PollResult;
 import edu.amaro.encuestabackend.models.request.PollCreationRequestModel;
 import edu.amaro.encuestabackend.repositories.PollRepository;
 import edu.amaro.encuestabackend.repositories.UserRepository;
@@ -106,6 +108,19 @@ public class PollServiceImplementation  implements PollService{
         }
         
         pollRepository.delete(poll);
+    }
+
+    @Override
+    public List<PollResult> getResults(String pollId, String email) {
+        UserEntity user = userRepository.findByEmail(email);
+
+        PollEntity poll = pollRepository.findByPollIdAndUserId(pollId, user.getId());
+
+        if(poll == null) {
+            throw new RuntimeException("Poll not found");
+        }
+
+        return pollRepository.getPollResults(poll.getId());
     }
     
 }
